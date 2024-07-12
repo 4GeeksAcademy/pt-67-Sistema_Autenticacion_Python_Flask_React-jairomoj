@@ -22,14 +22,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			getMessage: async () => {
-				try{
+				try {
 					// fetching data from the backend
 					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
 					const data = await resp.json()
 					setStore({ message: data.message })
 					// don't forget to return something, that is how the async resolves
 					return data;
-				}catch(error){
+				} catch (error) {
 					console.log("Error loading message from backend", error)
 				}
 			},
@@ -46,6 +46,30 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
+			},
+
+			userLogin: async (email, password) => {
+				try {
+					const response = await fetch('https://silver-space-computing-machine-95wpv4544qjh79p6-3001.app.github.dev/api/login', {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(
+							{
+								"email": email,
+								"password": password
+							}
+						)
+					});
+
+					const data = await response.json();
+					console.log(data);
+
+				} catch (error) {
+					alert("Login error: " + error.message);
+					console.error('Login error:', error);
+				}
 			}
 		}
 	};
