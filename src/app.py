@@ -78,25 +78,25 @@ def serve_any_other_file(path):
 
 # Create a route to authenticate your users and return JWTs. The
 # create_access_token() function is used to actually generate the JWT.
+# Tengo que definir mis rutas en el routes.py y en vez de usar las rutas completas, usar la variable BACKEND_URL de .env
 @app.route("/login", methods=["POST"])
 def login():
     print("Hola!")
-    # email = request.json.get("email", None)
-    # password = request.json.get("password", None)
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
 
-    # if email is "" or email is None:
-    #     return 'Debes especificar el email', 400
-    # if password is "" or password is None:
-    #     return 'Debes especificar una contraseña', 400
+    if email is "" or email is None:
+        return 'Debes especificar el email', 400
+    if password is "" or password is None:
+        return 'Debes especificar una contraseña', 400
 
-    # user = User.query.filter_by(email = email).first()
+    user = User.query.filter_by(email = email).first()
 
-    # if email != user.email or password != user.password:
-    #     return jsonify({"msg": "Bad email or password"}), 401
+    if email != user.email or password != user.password:
+        return jsonify({"msg": "Bad email or password"}), 401
 
-    # access_token = create_access_token(identity = email)
-    # return jsonify(access_token = access_token)
-    return 
+    access_token = create_access_token(identity = email)
+    return jsonify(access_token = access_token)
 
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
