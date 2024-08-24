@@ -15,6 +15,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 # from models import Person
 
@@ -51,6 +52,8 @@ app.register_blueprint(api, url_prefix='/api')
 
 # Handle/serialize errors like a JSON object
 
+# Allow CORS requests to this API
+CORS(app)
 
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -79,57 +82,9 @@ def serve_any_other_file(path):
 # Create a route to authenticate your users and return JWTs. The
 # create_access_token() function is used to actually generate the JWT.
 # Tengo que definir mis rutas en el routes.py y en vez de usar las rutas completas, usar la variable BACKEND_URL de .env
-@app.route("/login", methods=["POST"])
-def login():
-    print("Hola!")
-    email = request.json.get("email", None)
-    password = request.json.get("password", None)
-
-    if email is "" or email is None:
-        return 'Debes especificar el email', 400
-    if password is "" or password is None:
-        return 'Debes especificar una contraseña', 400
-
-    user = User.query.filter_by(email = email).first()
-
-    if email != user.email or password != user.password:
-        return jsonify({"msg": "Bad email or password"}), 401
-
-    access_token = create_access_token(identity = email)
-    return jsonify(access_token = access_token)
 
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
-@app.route("/private", methods=["GET"])
-@jwt_required()
-def private():
-    # Access the identity of the current user with get_jwt_identity
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as = current_user), 200
-
-@app.route('/signup', methods=['POST'])
-def signup():
-
-    body = request.json
-
-    if body is None:
-        return "El cuerpo de la solicitud es null", 400
-    if 'email' not in body:
-        return 'Debes especificar el email', 400
-    if 'password' not in body:
-        return 'Debes especificar una contraseña', 400
-    if 'is_active' not in body:
-        return 'Debes especificar si el usuario está activo', 400
-
-    user = User(email = body["email"], password = body["password"], is_active = body["is_active"])
-    db.session.add(user)
-    db.session.commit()
-
-    response_body = {
-        "msg": "Logged out!"
-    }
-
-    return jsonify(response_body), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

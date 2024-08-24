@@ -50,7 +50,37 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			userLogin: async (email, password) => {
 				try {
-					const response = await fetch('https://silver-space-computing-machine-95wpv4544qjh79p6-3001.app.github.dev/api/login', {
+					const response = await fetch(process.env.BACKEND_URL + '/api/login', {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(
+							{
+								"email": email,
+								"password": password
+							}
+						)
+					});
+					
+					if (response.ok) {
+						const data = await response.json();
+						localStorage.setItem("token", data.access_token);
+						return true;
+					} else {
+						console.error("Login failed:", response.statusText);
+						return false;
+					}
+
+				} catch (error) {
+					alert("Login error: " + error.message);
+					console.error('Login error:', error);
+				}
+			},
+
+			userSignup: async (email, password) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + '/api/signup', {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json"
@@ -63,8 +93,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 						)
 					});
 
-					const data = await response.json();
-					console.log(data);
+					if (response.ok) {
+						const data = await response.json();
+						return true;
+					} else {
+						console.error("Signup failed:", response.statusText);
+						return false;
+					}
 
 				} catch (error) {
 					alert("Login error: " + error.message);
